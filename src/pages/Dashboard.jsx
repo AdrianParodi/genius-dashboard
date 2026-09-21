@@ -6,20 +6,21 @@ export default function Dashboard() {
   const [budgetSummary, setBudgetSummary] = useState(null)
   const [leadsSummary, setLeadsSummary]   = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(null)
 
   useEffect(() => {
-    Promise.all([getBudgetSummary(), getLeadsSummary()])
-      .then(([budget, leads]) => {
-        setBudgetSummary(budget)
-        setLeadsSummary(leads)
+    Promise.allSettled([getBudgetSummary(), getLeadsSummary()])
+      .then(([budgetResult, leadsResult]) => {
+        if (budgetResult.status === 'fulfilled') {
+          setBudgetSummary(budgetResult.value)
+        }
+        if (leadsResult.status === 'fulfilled') {
+          setLeadsSummary(leadsResult.value)
+        }
       })
-      .catch(setError)
       .finally(() => setLoading(false))
   }, [])
 
   if (loading) return <p className="state-msg">Cargando...</p>
-  if (error)   return <p className="state-msg error">Error al conectar con las APIs: {error.message}</p>
 
   const totalLeads = leadsSummary.reduce((sum, l) => sum + (l.leadCount ?? 0), 0)
 

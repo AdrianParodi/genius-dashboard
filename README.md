@@ -33,7 +33,7 @@ El Dashboard consume ambas APIs a través de un proxy de Vite configurado en `vi
 
 ## Instalación
 
-```bash
+```bashn
 npm install
 ```
 
@@ -87,10 +87,12 @@ El archivo `vite.config.js` configura un proxy para evitar errores de CORS en de
 
 | Prefijo en el frontend | Destino real |
 |------------------------|--------------|
-| `/api/budget/*` | `http://localhost:8080/*` |
-| `/api/crm/*` | `http://localhost:3000/*` |
+| `/api/budget/*` | `http://localhost:8080/api/*` |
+| `/api/crm/*` | `http://localhost:3000/api/*` |
 
-Las llamadas a la API se hacen siempre con el prefijo (`/api/budget/campaigns`, `/api/crm/landings`) y Vite se encarga de redirigirlas. No hay que cambiar nada para que funcione.
+Las llamadas a la API se hacen siempre con el prefijo (`/api/budget/campaigns`, `/api/crm/landings`) y Vite reemplaza el prefijo del servicio (`/api/budget` o `/api/crm`) por `/api` antes de reenviarlas.
+
+El endpoint `GET /api/landings/summary` todavía está pendiente en Landing CRM. Mientras no exista, el dashboard muestra `—` en el total de leads sin impedir que carguen el presupuesto y las landings.
 
 ## Cómo trabajar en este repositorio
 
