@@ -21,7 +21,7 @@ export default function Dashboard() {
   if (loading) return <p className="state-msg">Cargando...</p>
   if (error)   return <p className="state-msg error">Error al conectar con las APIs: {error.message}</p>
 
-  const totalLeads = leadsSummary.reduce((sum, l) => sum + (l.leadCount ?? 0), 0)
+  // const totalLeads = leadsSummary.reduce((sum, l) => sum + (l.leadCount ?? 0), 0)
 
   return (
     <main className="page">
@@ -51,7 +51,7 @@ export default function Dashboard() {
         </div>
         <div className="kpi-card">
           <div className="kpi-label">Total leads</div>
-          <div className="kpi-value">{totalLeads}</div>
+          <div className="kpi-value">{leadsSummary.length}</div>
         </div>
       </div>
 

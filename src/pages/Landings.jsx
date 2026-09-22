@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getLandings } from '../services/landingCrmApi'
+import { getLandingLeads, getLandings } from '../services/landingCrmApi'
 
 const STATUS_BADGE = {
   activa:   'badge-active',
@@ -9,14 +9,38 @@ const STATUS_BADGE = {
 
 export default function Landings() {
   const [landings, setLandings] = useState([])
+  const [leads, setLeads] = useState([])
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
 
   useEffect(() => {
-    getLandings()
-      .then(setLandings)
-      .catch(setError)
-      .finally(() => setLoading(false))
+
+    const loadData = async () => {
+    try {
+      // 1. Obtener landings
+      const response = await getLandings()
+      
+      // 2. Preparar el objeto indexado de leads para búsquedas rápidas
+      const leadsMap = {}
+      
+      // 3. Iterar sobre las landings y obtener los leads en paralelo
+      for (const landing of response) {
+    
+        const responseLeads = await getLandingLeads(landing.id)
+        leadsMap[landing.id] = responseLeads 
+       
+      }
+      
+      setLandings(response)
+      setLeads(leadsMap)
+      setLoading(false)
+    } catch (error) {
+      setError(err)
+      setLoading(false)
+    }}
+
+    loadData()
+
   }, [])
 
   if (loading) return <p className="state-msg">Cargando landings...</p>
@@ -41,7 +65,9 @@ export default function Landings() {
               <span className={`badge ${STATUS_BADGE[l.status] ?? 'badge-draft'}`}>
                 {l.status}
               </span>
-              {/* TODO GD-F03: mostrar l.leadCount aquí */}
+              <p>
+                {leads[l.id].length}
+              </p>
             </div>
           </div>
         ))}
