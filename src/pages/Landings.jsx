@@ -9,7 +9,8 @@ const STATUS_BADGE = {
 
 export default function Landings() {
   const [landings, setLandings] = useState([])
-  const [leads, setLeads] = useState([])
+  const [leads, setLeads] = useState({})
+  const [selectedClient, setSelectedClient] = useState('Todos los clientes')
   const [loading, setLoading]   = useState(true)
   const [error, setError]       = useState(null)
 
@@ -20,22 +21,18 @@ export default function Landings() {
       // 1. Obtener landings
       const response = await getLandings()
       
-      // 2. Preparar el objeto indexado de leads para búsquedas rápidas
-      const leadsMap = {}
-      
-      // 3. Iterar sobre las landings y obtener los leads en paralelo
-      for (const landing of response) {
-    
+      // Obtener los leads en paralelo y dejarlos indexados por landing.
+      const leadEntries = await Promise.all(response.map(async landing => {
         const responseLeads = await getLandingLeads(landing.id)
-        leadsMap[landing.id] = responseLeads 
-       
-      }
+        return [landing.id, Array.isArray(responseLeads) ? responseLeads : []]
+      }))
+      const leadsMap = Object.fromEntries(leadEntries)
       
       setLandings(response)
       setLeads(leadsMap)
       setLoading(false)
-    } catch (error) {
-      setError(err)
+    } catch (loadError) {
+      setError(loadError)
       setLoading(false)
     }}
 
@@ -46,28 +43,36 @@ export default function Landings() {
   if (loading) return <p className="state-msg">Cargando landings...</p>
   if (error)   return <p className="state-msg error">Error: {error.message}</p>
 
+  const clients = ['Todos los clientes', ...new Set(landings.map(landing => landing.client).filter(Boolean))]
+  const filteredLandings = selectedClient === 'Todos los clientes'
+    ? landings
+    : landings.filter(landing => landing.client === selectedClient)
+
   return (
     <main className="page">
-      <h1>Landings</h1>
+      <div className="page-toolbar">
+        <h1>Landings</h1>
+        <label className="client-filter">
+          <span>Filtrar por cliente</span>
+          <select value={selectedClient} onChange={event => setSelectedClient(event.target.value)}>
+            {clients.map(client => <option key={client} value={client}>{client}</option>)}
+          </select>
+        </label>
+      </div>
 
-      {/* TODO GD-F03: agregar columna de conteo de leads por landing */}
-      {/* TODO GD-F05: selector de cliente */}
-
-      <div className="item-list">
-        {landings.length === 0 && <p className="state-msg">No hay landings registradas.</p>}
-        {landings.map(l => (
+      <div className="landing-list">
+        {filteredLandings.length === 0 && <p className="state-msg">No hay landings para el cliente seleccionado.</p>}
+        {filteredLandings.map(l => (
           <div key={l.id} className="item-card">
             <div>
               <div className="item-name">{l.name ?? l.title}</div>
               <div className="item-meta">{l.client} · Template: {l.template}</div>
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div className="landing-stats">
               <span className={`badge ${STATUS_BADGE[l.status] ?? 'badge-draft'}`}>
                 {l.status}
               </span>
-              <p>
-                {leads[l.id].length}
-              </p>
+              <div className="lead-count"><strong>{leads[l.id]?.length ?? 0}</strong><span> leads</span></div>
             </div>
           </div>
         ))}

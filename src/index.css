@@ -76,6 +76,9 @@ body {
 .page { padding: 28px; }
 .page h1 { font-size: 1.25rem; font-weight: 700; margin-bottom: 20px; }
 .page h2 { font-size: 1rem; font-weight: 700; margin: 24px 0 14px; color: #333; }
+.page-toolbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
+.client-filter { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 0.8rem; }
+.client-filter select { min-width: 180px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--surface); color: var(--text); font: inherit; }
 
 /* ── State messages ── */
 .state-msg { padding: 28px; color: var(--muted); font-size: 0.9rem; }
@@ -126,6 +129,10 @@ body {
 
 .item-card .item-name { font-weight: 600; }
 .item-card .item-meta { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+.landing-list { display: flex; flex-direction: column; gap: 10px; }
+.landing-stats { min-width: 110px; text-align: right; }
+.lead-count { margin-top: 7px; color: var(--muted); font-size: 0.8rem; }
+.lead-count strong { color: var(--text); font-size: 1.25rem; }
 
 .badge {
   display: inline-block;
@@ -139,3 +146,9 @@ body {
 .badge-draft   { background: #e9ecef; color: #495057; }
 .badge-paused  { background: #fff3cd; color: #664d03; }
 .badge-closed  { background: #f8d7da; color: #842029; }
+
+@media (max-width: 640px) {
+  .page-toolbar { display: block; }
+  .client-filter { justify-content: space-between; margin-bottom: 20px; }
+  .client-filter select { flex: 1; max-width: 220px; }
+}
