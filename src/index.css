@@ -152,3 +152,16 @@ body {
   .client-filter { justify-content: space-between; margin-bottom: 20px; }
   .client-filter select { flex: 1; max-width: 220px; }
 }
+
+.filtros {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 2rem;
+  gap: 2rem;
+  justify-content: end; 
+}
+
+@media (max-width: 640px) {
+  .filtros {flex-direction: column; 
+}
+}

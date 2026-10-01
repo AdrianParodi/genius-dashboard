@@ -18,10 +18,8 @@ export default function Landings() {
 
     const loadData = async () => {
     try {
-      // 1. Obtener landings
       const response = await getLandings()
       
-      // Obtener los leads en paralelo y dejarlos indexados por landing.
       const leadEntries = await Promise.all(response.map(async landing => {
         const responseLeads = await getLandingLeads(landing.id)
         return [landing.id, Array.isArray(responseLeads) ? responseLeads : []]

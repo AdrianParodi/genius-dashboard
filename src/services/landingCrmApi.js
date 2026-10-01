@@ -9,7 +9,7 @@ export async function getLandings(params = {}) {
 }
 
 export async function getLeadsSummary() {
-  const res = await fetch(`${BASE}/api/landings/summary`)
+  const res = await fetch(`${BASE}/api/landings/leads`)
   if (!res.ok) throw new Error(`Landing CRM: ${res.status}`)
   return res.json()
 }
